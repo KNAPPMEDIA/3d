@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="de" data-bg="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>3D-Upload · Knapp Media</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<link rel="stylesheet" href="lib/style.css">
+<style>
+  body { background: linear-gradient(180deg, var(--cyc-top) 0, var(--cyc-top) 320px, var(--cyc-floor) 100%) fixed; min-height: 100%; }
+  main { max-width: 860px; margin: 0 auto; padding: clamp(28px, 6vw, 64px) 16px 80px; }
+  .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
+  .top h1 { max-width: none; }
+  .who { font: 400 11px/1.6 var(--mono); color: var(--ink-soft); text-align: right; }
+  .who button { border: 0; background: none; padding: 0; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font: inherit; }
+  .card { background: var(--glass); border: 1px solid var(--rule); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
+  .card h2 { margin: 0 0 6px; font-size: 18px; font-weight: 700; font-stretch: 110%; }
+  .card p { margin: 0 0 12px; color: var(--ink-soft); }
+  .card ol { margin: 0 0 14px; padding-left: 20px; color: var(--ink-soft); }
+  .card ol b { color: var(--ink); font-weight: 600; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .field { height: 42px; border: 1px solid var(--rule); border-radius: 10px; background: #fff; padding: 0 12px; min-width: 0; flex: 1; }
+  .btn2 { height: 42px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--rule); background: transparent; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; color: var(--ink); white-space: nowrap; }
+  .btn2:hover { background: var(--rule); }
+  .btn.small { height: 42px; border-radius: 10px; }
+  .msg { font: 400 12px/1.4 var(--mono); margin-top: 10px; }
+  .msg.bad { color: var(--bad); }
+  .opts { display: flex; gap: 10px 18px; flex-wrap: wrap; align-items: center; }
+  .opts .field { flex: 1 1 240px; }
+  .opts .toggle { margin: 0; }
+
+  .zone {
+    border: 1.5px dashed color-mix(in srgb, var(--ink) 30%, transparent); border-radius: 18px;
+    min-height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    padding: 28px 20px; margin: 18px 0; transition: background .15s, border-color .15s; cursor: pointer;
+  }
+  .zone:hover, body.dragging .zone { background: color-mix(in srgb, var(--select) 8%, transparent); border-color: var(--select); }
+  .zone h2 { margin: 0 0 8px; font-weight: 750; font-stretch: 118%; font-size: clamp(24px, 4vw, 36px); line-height: 1; letter-spacing: -.02em; }
+  .zone p { margin: 0; color: var(--ink-soft); max-width: 46ch; }
+  .zone .fmts { margin-top: 14px; font: 400 11px/1.7 var(--mono); color: var(--ink-soft); letter-spacing: .04em; }
+  .zone input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .zone.off { opacity: .45; pointer-events: none; }
+
+  h3.sec { font: 500 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); margin: 30px 0 10px; display: flex; justify-content: space-between; align-items: center; }
+  h3.sec button { font: inherit; letter-spacing: .06em; text-transform: none; }
+  .list { display: flex; flex-direction: column; gap: 8px; }
+  .item { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; background: var(--glass); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; }
+  .item .t { font-weight: 650; overflow-wrap: anywhere; }
+  .item .s { font: 400 11px/1.5 var(--mono); color: var(--ink-soft); overflow-wrap: anywhere; }
+  .item .s.ok { color: var(--ok); } .item .s.bad { color: var(--bad); }
+  .item .a { display: flex; gap: 6px; grid-row: span 2; }
+  .item .a .btn2 { height: 34px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
+  .item .a .del:hover { color: var(--bad); border-color: var(--bad); background: none; }
+  .bar2 { height: 2px; background: var(--rule); grid-column: 1 / -1; overflow: hidden; border-radius: 2px; }
+  .bar2 i { display: block; height: 100%; width: 0; background: var(--select); transition: width .3s; }
+  .empty { color: var(--ink-soft); font-size: 14px; padding: 8px 2px; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: var(--cyc-top); padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: .2s; pointer-events: none; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); }
+  @media (max-width: 600px) { .item { grid-template-columns: 1fr; } .item .a { grid-row: auto; } .top { flex-direction: column; } .who { text-align: left; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <p class="brand"><b>Knapp Media</b> · 3D-Upload</p>
+      <h1>Modelle hochladen</h1>
+    </div>
+    <div class="who" id="who" hidden>Verbunden mit KNAPPMEDIA/3d<br><button id="logout">Schlüssel auf diesem Gerät entfernen</button></div>
+  </div>
+
+  <section class="card" id="setup" hidden>
+    <h2>Einmalig: GitHub-Schlüssel hinterlegen</h2>
+    <p>Damit diese Seite Modelle in dein Repo legen darf. Der Schlüssel bleibt nur in diesem Browser gespeichert.</p>
+    <ol>
+      <li>Klick auf <b>Schlüssel erstellen</b> (öffnet GitHub).</li>
+      <li>Bei <b>Repository access</b> „Only select repositories“ → <b>3d</b> wählen.</li>
+      <li>Bei <b>Permissions → Contents</b> „Read and write“ wählen, dann <b>Generate token</b>.</li>
+      <li>Den Schlüssel (beginnt mit <code>github_pat_</code>) hier einfügen.</li>
+    </ol>
+    <div class="row">
+      <a class="btn2" target="_blank" rel="noopener" href="https://github.com/settings/personal-access-tokens/new?name=3D-Upload&description=Upload-Seite%20f%C3%BCr%20knappmedia.github.io%2F3d&target_name=KNAPPMEDIA&expires_in=none&contents=write">Schlüssel erstellen ↗</a>
+      <input class="field" id="tokenIn" type="password" placeholder="github_pat_…" autocomplete="off" spellcheck="false" aria-label="GitHub-Schlüssel">
+      <button class="btn small" id="tokenSave">Speichern</button>
+    </div>
+    <div class="msg" id="tokenMsg"></div>
+  </section>
+
+  <section class="card">
+    <div class="opts">
+      <input class="field" id="client" placeholder="Kunde (optional, steht unter dem Titel)" aria-label="Kunde">
+      <label class="toggle"><input type="checkbox" id="optDark"><span></span>Dunkler Hintergrund</label>
+      <label class="toggle"><input type="checkbox" id="optDl"><span></span>Download erlauben</label>
+    </div>
+  </section>
+
+  <label class="zone off" id="zone">
+    <h2>Dateien hier reinziehen</h2>
+    <p>Jedes Modell bekommt seinen eigenen Link. Ganze Ordner mit Texturen gehen auch.</p>
+    <div class="fmts">GLB · GLTF · FBX · OBJ+MTL · STL · PLY · DAE · 3DS · 3MF · USDZ<br>C4D: vorher auf „C4D-zu-GLB.bat“ ziehen</div>
+    <input type="file" id="pick" multiple>
+  </label>
+
+  <h3 class="sec" id="jobsHead" hidden>Gerade hochgeladen <button class="btn2" id="copyAll" style="height:30px">Alle Links kopieren</button></h3>
+  <div class="list" id="jobs"></div>
+
+  <h3 class="sec">Alle Modelle <button class="btn2" id="reload" style="height:30px">Aktualisieren</button></h3>
+  <div class="list" id="all"><p class="empty">Wird geladen …</p></div>
+</main>
+<div class="toast" id="toast" role="status"></div>
+<script type="module" src="lib/upload.js"></script>
+</body>
+</html>
