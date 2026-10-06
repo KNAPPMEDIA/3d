@@ -140,6 +140,7 @@ input[type="range"] { width: 100%; accent-color: var(--select); margin: 10px 0 4
 .toggle input:checked + span::after { transform: translateX(14px); }
 .toggle input:focus-visible + span { outline: 2px solid var(--select); outline-offset: 2px; }
 .seg { display: grid; grid-template-columns: 1fr 1.4fr 1fr; background: var(--rule); border-radius: 8px; padding: 2px; }
+.seg.seg2 { grid-template-columns: 1fr 1fr; margin-top: 10px; }
 .seg button { border: 0; background: none; height: 30px; border-radius: 6px; cursor: pointer; font-size: 12.5px; font-weight: 600; }
 .seg [aria-checked="true"] { background: var(--ink); color: var(--cyc-top); }
 .modes { display: flex; flex-direction: column; }
