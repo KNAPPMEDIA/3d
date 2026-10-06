@@ -9,13 +9,32 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script type="importmap">
-{ "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
-} }
+<script>
+/* Immer die aktuelle Version laden: version.json kommt nie aus dem Browser-Cache,
+   alle eigenen Dateien bekommen ?v=<Version>. Sonst mischt der Browser nach einem Update
+   bis zu 10 Minuten alte und neue Dateien (GitHub Pages erlaubt so lange Caching). */
+(async entry => {
+  const de = document.documentElement; de.style.visibility = 'hidden';
+  let v = String(Date.now());
+  try { v = (await (await fetch('version.json?t=' + Date.now(), { cache: 'no-store' })).json()).v || v; } catch {}
+  const q = '?v=' + encodeURIComponent(v), cdn = 'https://cdn.jsdelivr.net/npm/';
+  const imports = {
+    three: cdn + 'three@0.170.0/build/three.module.js',
+    'three/addons/': cdn + 'three@0.170.0/examples/jsm/',
+    'three/examples/jsm/': cdn + 'three@0.170.0/examples/jsm/',
+    postprocessing: cdn + 'postprocessing@6.39.5/build/index.js',
+    n8ao: cdn + 'n8ao@2.0.1/dist/N8AO.js',
+  };
+  for (const f of ['app.js', 'viewer.js', 'loaders.js', 'gallery.js', 'upload.js', 'upload-core.js', 'thumb.js']) imports['./lib/' + f] = './lib/' + f + q;
+  const map = document.createElement('script'); map.type = 'importmap'; map.textContent = JSON.stringify({ imports });
+  document.head.append(map);
+  const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'lib/style.css' + q;
+  const show = () => (de.style.visibility = ''); css.onload = css.onerror = show; setTimeout(show, 3000);
+  document.head.append(css);
+  if (document.readyState === 'loading') await new Promise(r => addEventListener('DOMContentLoaded', r));
+  import(entry());
+})(() => './lib/upload.js');
 </script>
-<link rel="stylesheet" href="lib/style.css">
 <style>
   body { background: linear-gradient(180deg, var(--cyc-top) 0, var(--cyc-top) 320px, var(--cyc-floor) 100%) fixed; min-height: 100%; }
   main { max-width: 900px; margin: 0 auto; padding: clamp(28px, 6vw, 64px) 16px 80px; }
@@ -163,6 +182,5 @@
   <div id="all"><p class="empty">Wird geladen …</p></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
-<script type="module" src="lib/upload.js"></script>
 </body>
 </html>
