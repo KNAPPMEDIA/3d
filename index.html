@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>3D-Vorschau · Knapp Media</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.0.0/dist/model-viewer.min.js"></script>
+<style>
+  :root {
+    --cyc-top: #F1F2F4;
+    --cyc-floor: #D3D6DB;
+    --ink: #1D2024;
+    --ink-soft: #5B626B;
+    --rule: rgba(29, 32, 36, .14);
+    --glass: rgba(255, 255, 255, .72);
+    --select: #F08A24;          /* Auswahlfarbe wie im C4D-Viewport */
+    --display: "Archivo", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", ui-monospace, monospace;
+  }
+  :root[data-bg="dark"] {
+    --cyc-top: #2B2F35;
+    --cyc-floor: #111316;
+    --ink: #ECEDEF;
+    --ink-soft: #9AA1AA;
+    --rule: rgba(236, 237, 239, .16);
+    --glass: rgba(24, 26, 30, .66);
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--cyc-floor);
+    color: var(--ink);
+    font: 400 15px/1.45 var(--display);
+    font-stretch: 100%;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Hohlkehle: Studio-Hintergrund, der in den Boden ausläuft */
+  .stage {
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(120% 70% at 50% 108%, rgba(0,0,0,.10), transparent 60%),
+      linear-gradient(180deg, var(--cyc-top) 0%, var(--cyc-top) 38%, var(--cyc-floor) 100%);
+    transition: background .5s;
+  }
+  model-viewer {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    --poster-color: transparent;
+    --progress-bar-height: 0px;
+    outline: none;
+  }
+
+  /* Kamera-Rahmen: Bildmarken wie im Sucher */
+  .frame { position: absolute; inset: clamp(16px, 4vw, 40px); pointer-events: none; }
+  .frame i { position: absolute; width: 22px; height: 22px; border: 0 solid var(--ink); opacity: .55; }
+  .frame i:nth-child(1) { top: 0; left: 0; border-top-width: 1.5px; border-left-width: 1.5px; }
+  .frame i:nth-child(2) { top: 0; right: 0; border-top-width: 1.5px; border-right-width: 1.5px; }
+  .frame i:nth-child(3) { bottom: 0; left: 0; border-bottom-width: 1.5px; border-left-width: 1.5px; }
+  .frame i:nth-child(4) { bottom: 0; right: 0; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+  .head {
+    position: absolute; top: clamp(28px, 5.5vw, 60px); left: clamp(32px, 6vw, 72px); right: clamp(32px, 6vw, 72px);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px;
+    pointer-events: none;
+  }
+  .brand {
+    font: 600 11px/1 var(--mono); letter-spacing: .18em; text-transform: uppercase; color: var(--ink-soft);
+    margin: 0 0 14px;
+  }
+  .brand b { color: var(--ink); font-weight: 500; }
+  h1 {
+    margin: 0; font-weight: 750; font-stretch: 118%;
+    font-size: clamp(26px, 4.4vw, 54px); line-height: .95; letter-spacing: -.02em;
+    max-width: 16ch; text-wrap: balance;
+  }
+  .meta { margin: 12px 0 0; color: var(--ink-soft); font-size: 14px; max-width: 42ch; }
+  .meta:empty { display: none; }
+  .rec {
+    font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft);
+    display: flex; align-items: center; gap: 8px; white-space: nowrap; padding-top: 2px;
+  }
+  .rec::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--select); }
+
+  /* Viewport-HUD unten links: echte Kamerawerte */
+  .hud {
+    position: absolute; left: clamp(32px, 6vw, 72px); bottom: clamp(30px, 5.5vw, 58px);
+    font: 400 11px/1.7 var(--mono); color: var(--ink-soft); letter-spacing: .04em;
+    pointer-events: none; font-variant-numeric: tabular-nums;
+  }
+  .hud span { color: var(--ink); }
+
+  .bar {
+    position: absolute; left: 50%; bottom: clamp(24px, 5vw, 48px); transform: translateX(-50%);
+    display: flex; gap: 2px; padding: 5px;
+    background: var(--glass); backdrop-filter: blur(14px) saturate(1.3); -webkit-backdrop-filter: blur(14px) saturate(1.3);
+    border: 1px solid var(--rule); border-radius: 999px;
+    box-shadow: 0 10px 30px -12px rgba(0,0,0,.35);
+  }
+  .bar button, .bar a {
+    appearance: none; border: 0; background: transparent; color: var(--ink);
+    height: 40px; min-width: 40px; padding: 0 14px; border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    font: 500 13px/1 var(--display); cursor: pointer; text-decoration: none; white-space: nowrap;
+    transition: background .15s;
+  }
+  .bar button:hover, .bar a:hover { background: var(--rule); }
+  .bar button[aria-pressed="true"] { color: var(--select); }
+  .bar svg { width: 18px; height: 18px; flex: none; }
+  .bar .lbl { display: inline; }
+  :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
+
+  .hint {
+    position: absolute; left: 50%; bottom: calc(clamp(24px, 5vw, 48px) + 64px); transform: translateX(-50%);
+    font: 400 12px/1 var(--mono); color: var(--ink-soft); letter-spacing: .04em; white-space: nowrap;
+    transition: opacity .6s; pointer-events: none;
+  }
+  .hint.gone { opacity: 0; }
+
+  .load {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+    width: min(240px, 60vw); text-align: center; font: 400 11px/1 var(--mono); color: var(--ink-soft); letter-spacing: .08em;
+    transition: opacity .4s; pointer-events: none;
+  }
+  .load .track { height: 2px; background: var(--rule); margin-top: 12px; overflow: hidden; }
+  .load .fill { height: 100%; width: 0; background: var(--select); transition: width .2s; }
+  .load.done { opacity: 0; }
+
+  /* Startseite ohne Modell: lokale Vorschau per Drag & Drop */
+  .drop {
+    position: absolute; inset: clamp(16px, 4vw, 40px); display: none;
+    align-items: center; justify-content: center; text-align: center; padding: 24px;
+  }
+  .drop.on { display: flex; }
+  .drop .box { max-width: 460px; }
+  .drop h2 { margin: 0 0 12px; font-weight: 750; font-stretch: 118%; font-size: clamp(28px, 5vw, 46px); line-height: .95; letter-spacing: -.02em; }
+  .drop p { margin: 0 0 22px; color: var(--ink-soft); }
+  .drop label {
+    display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 999px;
+    background: var(--ink); color: var(--cyc-top); font-weight: 600; cursor: pointer;
+  }
+  .drop input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .drop small { display: block; margin-top: 18px; font: 400 11px/1.6 var(--mono); color: var(--ink-soft); }
+  .drop small a { color: inherit; }
+  body.dragging .drop .box { outline: 1.5px dashed var(--select); outline-offset: 28px; border-radius: 4px; }
+
+  .err { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; padding: 32px; text-align: center; }
+  .err.on { display: flex; }
+  .err p { max-width: 38ch; color: var(--ink-soft); }
+  .err b { display: block; color: var(--ink); font-size: 20px; margin-bottom: 8px; }
+
+  @media (max-width: 640px) {
+    .bar .lbl { display: none; }
+    .bar button, .bar a { padding: 0 11px; }
+    .hud { display: none; }
+    .rec { display: none; }
+    .hint { font-size: 11px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <model-viewer id="mv"
+    camera-controls touch-action="pan-y"
+    shadow-intensity="1" shadow-softness="0.9"
+    environment-image="neutral" exposure="1"
+    interaction-prompt="none"
+    ar ar-modes="webxr scene-viewer quick-look"
+    rotation-per-second="18deg" auto-rotate-delay="0"
+    interpolation-decay="120">
+    <button slot="ar-button" hidden></button>
+  </model-viewer>
+
+  <div class="frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <header class="head" id="head" hidden>
+    <div>
+      <p class="brand"><b>Knapp Media</b> · 3D-Vorschau</p>
+      <h1 id="title"></h1>
+      <p class="meta" id="meta"></p>
+    </div>
+    <div class="rec" id="stamp"></div>
+  </header>
+
+  <div class="load" id="load" hidden>
+    <span id="loadTxt">Modell lädt</span>
+    <div class="track"><div class="fill" id="fill"></div></div>
+  </div>
+
+  <div class="hud" id="hud" hidden aria-hidden="true">
+    Azimut <span id="hAz">0°</span> · Neigung <span id="hEl">0°</span><br>
+    Abstand <span id="hR">0</span> · Größe <span id="hDim">–</span>
+  </div>
+
+  <p class="hint" id="hint" hidden>Ziehen zum Drehen · Pinch/Scrollen zum Zoomen · zwei Finger verschieben</p>
+
+  <nav class="bar" id="bar" hidden aria-label="Ansicht steuern">
+    <button id="bRotate" aria-pressed="false" title="Automatisch drehen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v4h-4"/></svg>
+      <span class="lbl">Drehen</span>
+    </button>
+    <button id="bReset" title="Ansicht zurücksetzen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>
+      <span class="lbl">Zurücksetzen</span>
+    </button>
+    <button id="bBg" title="Hintergrund hell/dunkel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor"/></svg>
+      <span class="lbl" id="bBgLbl">Dunkel</span>
+    </button>
+    <button id="bAr" hidden title="Im eigenen Raum ansehen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5"/></svg>
+      <span class="lbl">In AR ansehen</span>
+    </button>
+    <a id="bDl" hidden download title="Datei herunterladen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+      <span class="lbl">Download</span>
+    </a>
+    <button id="bFs" title="Vollbild">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      <span class="lbl">Vollbild</span>
+    </button>
+  </nav>
+
+  <section class="drop" id="drop">
+    <div class="box">
+      <h2>Modell ansehen</h2>
+      <p>Lege eine .glb-Datei hier ab, um sie zu prüfen. Die Datei bleibt auf diesem Rechner und wird nicht hochgeladen.</p>
+      <label>Datei wählen<input type="file" id="file" accept=".glb,.gltf,model/gltf-binary"></label>
+      <small>Zum Teilen: <code>neues-modell.ps1</code> ausführen · <a href="?m=demo">Demo öffnen</a></small>
+    </div>
+  </section>
+
+  <div class="err" id="err"><p><b id="errHead">Modell nicht gefunden</b><span id="errTxt">Dieser Link ist ungültig oder das Modell wurde entfernt. Bitte frag bei Knapp Media nach einem neuen Link.</span></p></div>
+</div>
+
+<script type="module">
+const $ = id => document.getElementById(id);
+const mv = $('mv');
+const params = new URLSearchParams(location.search);
+const slug = (params.get('m') || '').replace(/[^a-z0-9-]/gi, '');
+const src = params.get('src');
+
+/* Hintergrund: ?bg=dark erzwingt dunkel, sonst info.json, sonst hell */
+function setBg(mode) {
+  document.documentElement.dataset.bg = mode;
+  $('bBgLbl').textContent = mode === 'dark' ? 'Hell' : 'Dunkel';
+}
+setBg(params.get('bg') === 'dark' ? 'dark' : 'light');
+
+function showViewer(info, url) {
+  $('head').hidden = $('bar').hidden = $('hud').hidden = $('hint').hidden = $('load').hidden = false;
+  $('title').textContent = info.title || 'Modell';
+  $('meta').textContent = [info.client, info.note].filter(Boolean).join(' — ');
+  $('stamp').textContent = info.date ? 'Stand ' + info.date : '';
+  document.title = (info.title || 'Modell') + ' · Knapp Media';
+  if (info.background && !params.get('bg')) setBg(info.background);
+  if (info.exposure) mv.exposure = info.exposure;
+  if (info.download && url) { const a = $('bDl'); a.hidden = false; a.href = url; }
+  const rot = info.autoRotate !== false;
+  mv.autoRotate = rot; $('bRotate').setAttribute('aria-pressed', rot);
+  mv.src = url;
+}
+
+function fail(head, txt) {
+  $('err').classList.add('on');
+  $('load').hidden = true; $('bar').hidden = $('hud').hidden = $('hint').hidden = true;
+  if (head) $('errHead').textContent = head;
+  if (txt) $('errTxt').textContent = txt;
+}
+
+if (slug) {
+  fetch(`m/${slug}/info.json`, { cache: 'no-cache' })
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(info => showViewer(info, `m/${slug}/${info.file || 'model.glb'}`))
+    .catch(() => fail());
+} else if (src) {
+  showViewer({ title: params.get('t') || 'Modell' }, src);
+} else {
+  $('drop').classList.add('on');
+}
+
+/* Lokale Vorschau */
+function openLocal(file) {
+  if (!file || !/\.(glb|gltf)$/i.test(file.name)) return;
+  $('drop').classList.remove('on');
+  showViewer({ title: file.name.replace(/\.(glb|gltf)$/i, ''), note: 'Lokale Vorschau – nur auf diesem Rechner' }, URL.createObjectURL(file));
+}
+$('file').addEventListener('change', e => openLocal(e.target.files[0]));
+addEventListener('dragover', e => { e.preventDefault(); document.body.classList.add('dragging'); });
+addEventListener('dragleave', e => { if (!e.relatedTarget) document.body.classList.remove('dragging'); });
+addEventListener('drop', e => { e.preventDefault(); document.body.classList.remove('dragging'); if (!slug) openLocal(e.dataTransfer.files[0]); });
+
+/* Laden */
+mv.addEventListener('progress', e => {
+  const p = e.detail.totalProgress;
+  $('fill').style.width = (p * 100).toFixed(0) + '%';
+  $('loadTxt').textContent = 'Modell lädt ' + (p * 100).toFixed(0) + ' %';
+  if (p >= 1) $('load').classList.add('done');
+});
+mv.addEventListener('load', () => {
+  const d = mv.getDimensions();
+  const f = v => v >= 1 ? v.toFixed(2) + ' m' : (v * 100).toFixed(1) + ' cm';
+  $('hDim').textContent = `${f(d.x)} × ${f(d.y)} × ${f(d.z)}`;
+  $('bAr').hidden = !mv.canActivateAR;
+});
+mv.addEventListener('error', () => fail('Modell konnte nicht geladen werden', 'Die Datei ist beschädigt oder kein gültiges glTF/GLB.'));
+
+/* HUD */
+const deg = r => ((r * 180 / Math.PI) % 360 + 360) % 360;
+mv.addEventListener('camera-change', e => {
+  const o = mv.getCameraOrbit();
+  $('hAz').textContent = deg(o.theta).toFixed(0).padStart(3, ' ') + '°';
+  $('hEl').textContent = deg(o.phi).toFixed(0) + '°';
+  $('hR').textContent = o.radius.toFixed(2) + ' m';
+  if (e.detail.source === 'user-interaction') {
+    $('hint').classList.add('gone');
+  }
+});
+
+/* Steuerung */
+$('bRotate').onclick = () => {
+  mv.autoRotate = !mv.autoRotate;
+  $('bRotate').setAttribute('aria-pressed', mv.autoRotate);
+};
+$('bReset').onclick = () => {
+  mv.cameraOrbit = 'auto auto auto'; mv.cameraTarget = 'auto auto auto'; mv.fieldOfView = 'auto';
+  mv.resetTurntableRotation?.(0); mv.jumpCameraToGoal?.();
+};
+$('bBg').onclick = () => setBg(document.documentElement.dataset.bg === 'dark' ? 'light' : 'dark');
+$('bAr').onclick = () => mv.activateAR();
+$('bFs').onclick = () => document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.();
+setTimeout(() => $('hint').classList.add('gone'), 7000);
+</script>
+</body>
+</html>
