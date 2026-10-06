@@ -25,7 +25,7 @@
     postprocessing: cdn + 'postprocessing@6.39.5/build/index.js',
     n8ao: cdn + 'n8ao@2.0.1/dist/N8AO.js',
   };
-  for (const f of ['app.js', 'viewer.js', 'loaders.js', 'gallery.js', 'upload.js', 'upload-core.js', 'thumb.js']) imports['./lib/' + f] = './lib/' + f + q;
+  for (const f of ['app.js', 'viewer.js', 'loaders.js', 'gallery.js', 'upload.js', 'upload-core.js', 'thumb.js', 'recorder.js']) imports['./lib/' + f] = './lib/' + f + q;
   const map = document.createElement('script'); map.type = 'importmap'; map.textContent = JSON.stringify({ imports });
   document.head.append(map);
   const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'lib/style.css' + q;

@@ -25,7 +25,7 @@
     postprocessing: cdn + 'postprocessing@6.39.5/build/index.js',
     n8ao: cdn + 'n8ao@2.0.1/dist/N8AO.js',
   };
-  for (const f of ['app.js', 'viewer.js', 'loaders.js', 'gallery.js', 'upload.js', 'upload-core.js', 'thumb.js']) imports['./lib/' + f] = './lib/' + f + q;
+  for (const f of ['app.js', 'viewer.js', 'loaders.js', 'gallery.js', 'upload.js', 'upload-core.js', 'thumb.js', 'recorder.js']) imports['./lib/' + f] = './lib/' + f + q;
   const map = document.createElement('script'); map.type = 'importmap'; map.textContent = JSON.stringify({ imports });
   document.head.append(map);
   const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'lib/style.css' + q;
@@ -147,6 +147,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 12l8-4.5M12 12v9M12 12L4 7.5" stroke-dasharray="2 2"/></svg>
       <span class="lbl">Inspektor</span>
     </button>
+    <button id="bRec" hidden title="Video-Feedback mit Mikrofon aufnehmen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>
+      <span class="lbl">Feedback</span>
+    </button>
     <button id="bAr" hidden title="Im eigenen Raum ansehen">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3"/><path d="M12 7l4 2.2v4.6L12 16l-4-2.2V9.2z"/></svg>
       <span class="lbl">In AR</span>
@@ -169,6 +173,25 @@
       <small>GLB · GLTF · FBX · OBJ · STL · PLY · DAE · 3DS · 3MF · USDZ<br><a href="upload.html">Hochladen und Kundenlinks erstellen →</a></small>
     </div>
   </section>
+
+  <!-- Video-Feedback: läuft die Aufnahme, zeigt diese Leiste Zeit und Stopp -->
+  <div class="recpill" id="recPill" hidden role="status">
+    <i aria-hidden="true"></i><span id="recTime">0:00</span>
+    <span class="rectxt">Modell drehen und Feedback sprechen</span>
+    <button id="recStop">Stopp</button>
+  </div>
+  <div class="recdlg" id="recDlg" hidden role="dialog" aria-labelledby="recHead">
+    <div class="recbox">
+      <h2 id="recHead">Dein Feedback-Video</h2>
+      <video id="recVideo" playsinline controls></video>
+      <div class="recbtns">
+        <button class="btn" id="recShare">Teilen · WhatsApp</button>
+        <a class="btn ghost" id="recSave">Laden</a>
+      </div>
+      <p class="recnote" id="recNote">„Teilen“ öffnet das Teilen-Menü – dort WhatsApp wählen und an Knapp Media schicken.</p>
+      <button class="reclink" id="recDiscard">Verwerfen und neu aufnehmen</button>
+    </div>
+  </div>
 
   <div class="err" id="err"><p><b id="errHead">Modell nicht gefunden</b><span id="errTxt">Dieser Link ist ungültig oder das Modell wurde entfernt. Bitte frag bei Knapp Media nach einem neuen Link.</span></p></div>
 </div>

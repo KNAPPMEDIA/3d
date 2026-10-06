@@ -160,6 +160,31 @@ input[type="range"] { width: 100%; accent-color: var(--select); margin: 10px 0 4
 .anim select { flex: 1; min-width: 0; height: 32px; border: 1px solid var(--rule); border-radius: 8px; background: transparent; padding: 0 8px; }
 .anim button { height: 32px; padding: 0 12px; border: 1px solid var(--rule); border-radius: 8px; background: none; cursor: pointer; }
 
+/* ---------- Video-Feedback ---------- */
+.bar #bRec.on { color: var(--bad); }
+.recpill { position: absolute; top: calc(14px + env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); z-index: 6;
+  display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 14px; border-radius: 999px; max-width: calc(100vw - 24px);
+  background: #1D2024; color: #fff; font: 500 13px/1 var(--display); box-shadow: 0 10px 30px -10px rgba(0,0,0,.5); }
+.recpill i { width: 10px; height: 10px; border-radius: 50%; background: var(--bad); animation: blink 1s steps(2) infinite; flex: none; }
+@keyframes blink { 50% { opacity: .25; } }
+.recpill #recTime { font: 500 14px/1 var(--mono); font-variant-numeric: tabular-nums; }
+.recpill .rectxt { opacity: .7; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recpill button { border: 0; border-radius: 999px; background: var(--bad); color: #fff; font-weight: 700; height: 34px; padding: 0 16px; cursor: pointer; flex: none; }
+.recdlg { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 16px;
+  background: rgba(10, 12, 14, .55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.recbox { width: min(440px, 100%); max-height: calc(100vh - 32px); overflow: auto; background: var(--cyc-top); color: var(--ink);
+  border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 20px 60px -20px rgba(0,0,0,.6); }
+.recbox h2 { margin: 0; font-size: 20px; font-weight: 750; font-stretch: 112%; }
+.recbox video { width: 100%; max-height: 52vh; border-radius: 12px; background: #000; }
+.recbtns { display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px; }
+.recbtns .btn { justify-content: center; border-radius: 12px; height: 48px; }
+.recbtns .btn:first-child { background: #25D366; color: #fff; }   /* WhatsApp-Grün: sofort erkennbar */
+.recbtns .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--rule); }
+.recbtns .btn[hidden] + .btn { grid-column: 1 / -1; }
+.recnote { margin: 0; font-size: 13px; color: var(--ink-soft); }
+.reclink { border: 0; background: none; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font-size: 13px; padding: 4px; align-self: center; }
+@media (max-width: 760px) { .recpill .rectxt { display: none; } }
+
 /* AR-Auswahl über der Leiste */
 .arpick { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(16px + env(safe-area-inset-bottom) + 64px); z-index: 5;
   display: flex; gap: 8px; padding: 8px; border-radius: 18px; width: min(360px, calc(100vw - 24px));
