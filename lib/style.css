@@ -215,6 +215,8 @@ body.dragging .drop .box { outline: 1.5px dashed var(--select); outline-offset: 
   /* AR ist auf dem Handy das Wichtigste: mit Text und Akzentfarbe */
   .bar #bAr { background: var(--select); color: #fff; margin-left: 4px; }
   .bar #bAr .lbl { display: inline; }
+  .bar #bAr.pulse { animation: arpulse 1.2s ease-in-out infinite; }
+  @keyframes arpulse { 50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--select) 35%, transparent); } }
 }
 @media (max-width: 359px) {
   .bar #bAr .lbl { display: none; }   /* sehr schmale Handys: AR nur als oranges Symbol */
