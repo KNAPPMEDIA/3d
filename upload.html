@@ -71,6 +71,9 @@
   .item .s.ok { color: var(--ok); } .item .s.bad { color: var(--bad); }
   .item .a { display: flex; gap: 6px; grid-row: span 2; grid-column: 3; flex-wrap: wrap; justify-content: flex-end; }
   .item .a select { height: 32px; border: 1px solid var(--rule); border-radius: 8px; background: transparent; padding: 0 6px; max-width: 150px; font-size: 12.5px; }
+  .item .a select[data-s="ok"] { border-color: #1E9E5A; }
+  .item .a select[data-s="no"] { border-color: #D2452F; }
+  .item .a select[data-s="unsure"] { border-color: #E3A800; }
   .item .a .del:hover { color: var(--bad); border-color: var(--bad); background: none; }
   .item { transition: box-shadow .12s, background .12s; }
   .item.dropover { background: color-mix(in srgb, var(--select) 14%, var(--glass)); box-shadow: 0 0 0 2px var(--select); }

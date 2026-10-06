@@ -11,7 +11,7 @@ const PORT = 8795;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const C4DPY = 'C:\\Program Files\\Maxon Cinema 4D 2026\\c4dpy.exe';
 const core = await import(pathToFileURL(path.join(ROOT, 'lib', 'upload-core.js')));
-const CALLS = ['uploadModel', 'replaceModel', 'moveModel', 'deleteModel', 'createFolder', 'setFolderLogo', 'deleteFolder', 'listAll'];
+const CALLS = ['uploadModel', 'replaceModel', 'moveModel', 'setInfo', 'deleteModel', 'createFolder', 'setFolderLogo', 'deleteFolder', 'listAll'];
 
 function token() {
   try { return execSync('gh auth token', { encoding: 'utf8', windowsHide: true }).trim(); }
