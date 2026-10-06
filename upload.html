@@ -72,6 +72,10 @@
   .item .a { display: flex; gap: 6px; grid-row: span 2; grid-column: 3; flex-wrap: wrap; justify-content: flex-end; }
   .item .a select { height: 32px; border: 1px solid var(--rule); border-radius: 8px; background: transparent; padding: 0 6px; max-width: 150px; font-size: 12.5px; }
   .item .a .del:hover { color: var(--bad); border-color: var(--bad); background: none; }
+  .item { transition: box-shadow .12s, background .12s; }
+  .item.dropover { background: color-mix(in srgb, var(--select) 14%, var(--glass)); box-shadow: 0 0 0 2px var(--select); }
+  .item.dropover .s::before { content: "Loslassen = neue Version, gleicher Link · "; color: var(--select); font-weight: 500; }
+  .hint2 { font: 400 11px/1.5 var(--mono); color: var(--ink-soft); margin: -4px 0 12px; }
   .bar2 { height: 2px; background: var(--rule); grid-column: 1 / -1; overflow: hidden; border-radius: 2px; }
   .bar2 i { display: block; height: 100%; width: 0; background: var(--select); transition: width .3s; }
   .group { margin-bottom: 22px; }
@@ -152,6 +156,7 @@
   <div class="list" id="jobs"></div>
 
   <h3 class="sec">Alle Modelle <button class="btn2 sm" id="reload">Aktualisieren</button></h3>
+  <p class="hint2">Neue Version: Datei direkt auf ein Modell ziehen – der Link bleibt gleich, die alte Version wird ersetzt.</p>
   <div id="all"><p class="empty">Wird geladen …</p></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
