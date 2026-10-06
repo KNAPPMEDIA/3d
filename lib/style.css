@@ -31,6 +31,8 @@ body {
 }
 :focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
 button, select, input { font: inherit; color: inherit; }
+/* Touch: kein Doppeltipp-Zoom und kein grauer Blitz auf Knöpfen */
+button, a, select, label { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
 /* ---------- Viewer ---------- */
 body.viewer { overflow: hidden; }
@@ -207,11 +209,36 @@ body.dragging .drop .box { outline: 1.5px dashed var(--select); outline-offset: 
 :root[data-bg="dark"] .brand img { filter: invert(1); }
 
 @media (max-width: 760px) {
+  .bar { bottom: calc(16px + env(safe-area-inset-bottom)); gap: 0; }
   .bar .lbl { display: none; }
-  .bar button, .bar a { padding: 0 11px; }
+  .bar button, .bar a { padding: 0 12px; height: 46px; min-width: 46px; }
+  /* AR ist auf dem Handy das Wichtigste: mit Text und Akzentfarbe */
+  .bar #bAr { background: var(--select); color: #fff; margin-left: 4px; }
+  .bar #bAr .lbl { display: inline; }
+}
+@media (max-width: 400px) {
+  .bar #bAr .lbl { display: none; }   /* sehr schmale Handys: AR nur als oranges Symbol */
+  .bar button, .bar a { padding: 0 10px; min-width: 42px; }
+}
+@media (max-width: 760px) {
   .hud, .rec { display: none; }
-  .hint { font-size: 11px; white-space: normal; text-align: center; width: 80vw; }
-  .insp { top: auto; left: 12px; right: 12px; width: auto; max-height: 52vh; bottom: calc(clamp(24px, 5vw, 48px) + 60px); }
+  .hint { font-size: 12px; white-space: normal; text-align: center; color: var(--ink); bottom: calc(16px + env(safe-area-inset-bottom) + 64px);
+    background: var(--glass); padding: 8px 12px; border-radius: 999px; width: auto; max-width: 88vw; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+  .head { top: calc(24px + env(safe-area-inset-top)); left: 28px; right: 28px; }
+  h1 { font-size: clamp(24px, 7.4vw, 34px); }
+  .brand { margin-bottom: 10px; }
+  .brand a { padding: 6px 0; }
+  .frame { inset: 12px; }
+  .ggrid { grid-template-columns: 1fr 1fr; gap: 14px 12px; }
+  .gallery { padding: calc(36px + env(safe-area-inset-top)) 14px calc(40px + env(safe-area-inset-bottom)); }
+  .glogo { width: min(300px, 70vw); max-height: 140px; margin-bottom: 16px; }
+  .ghero { margin-bottom: 28px; }
+  .gthumb, .gcard { border-radius: 12px; }
+  .g3d { left: 8px; bottom: 8px; padding: 6px 9px; font-size: 11px; }
+  .gmeta { padding: 8px 2px 0; }
+  .gmeta h2 { font-size: 14px; }
+  .gmeta p { font-size: 10px; }
+  .insp { top: auto; left: 10px; right: 10px; width: auto; max-height: 48vh; bottom: calc(16px + env(safe-area-inset-bottom) + 58px); }
   .stage[data-view="split"] .view3d { right: 0; bottom: 50%; }
   .stage[data-view="split"] .view2d { left: 0; top: 50%; border-left: 0; border-top: 1px solid var(--rule); }
   .stage[data-view="split"] .v2head { padding: 12px 16px 8px; }
