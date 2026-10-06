@@ -35,7 +35,7 @@
 
   <header class="head" id="head" hidden>
     <div>
-      <p class="brand"><b>Knapp Media</b> · 3D-Vorschau</p>
+      <p class="brand" id="brand"><b>Knapp Media</b> · 3D-Vorschau</p>
       <h1 id="title"></h1>
       <p class="meta" id="meta"></p>
     </div>
@@ -153,6 +153,20 @@
   <div class="err" id="err"><p><b id="errHead">Modell nicht gefunden</b><span id="errTxt">Dieser Link ist ungültig oder das Modell wurde entfernt. Bitte frag bei Knapp Media nach einem neuen Link.</span></p></div>
 </div>
 
-<script type="module" src="lib/app.js"></script>
+<section class="gallery" id="gallery" hidden>
+  <header class="ghero">
+    <img class="glogo" id="gLogo" alt="" hidden>
+    <h1 class="gname" id="gName"></h1>
+    <p class="gsub"><span id="gCount"></span> · präsentiert von <b>Knapp Media</b></p>
+  </header>
+  <div class="ggrid" id="gGrid"></div>
+  <p class="gfoot">Klick auf ein Modell, um es in 3D zu drehen und von allen Seiten anzusehen.</p>
+</section>
+
+<script type="module">
+  // Ordnerseite (?f=) oder einzelnes Modell
+  const p = new URLSearchParams(location.search);
+  import(p.get('f') && !p.get('m') ? './lib/gallery.js' : './lib/app.js');
+</script>
 </body>
 </html>

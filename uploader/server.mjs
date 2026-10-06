@@ -11,6 +11,7 @@ const PORT = 8795;
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const C4DPY = 'C:\\Program Files\\Maxon Cinema 4D 2026\\c4dpy.exe';
 const core = await import(pathToFileURL(path.join(ROOT, 'lib', 'upload-core.js')));
+const CALLS = ['uploadModel', 'replaceModel', 'moveModel', 'deleteModel', 'createFolder', 'setFolderLogo', 'deleteFolder', 'listAll'];
 
 function token() {
   try { return execSync('gh auth token', { encoding: 'utf8', windowsHide: true }).trim(); }
@@ -41,14 +42,11 @@ http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   try {
     if (url.pathname === '/api/status') return json(res, 200, { ok: !!token(), c4d: await stat(C4DPY).then(() => true, () => false) });
-    if (url.pathname === '/api/list') return json(res, 200, await core.listModels(token()));
-    if (url.pathname === '/api/upload' && req.method === 'POST') {
-      const info = JSON.parse(url.searchParams.get('info') || '{}');
-      const buf = await body(req);
-      return json(res, 200, await core.uploadModel(token(), buf.toString('base64'), info));
-    }
-    if (url.pathname === '/api/delete' && req.method === 'POST') {
-      await core.deleteModel(token(), url.searchParams.get('slug')); return json(res, 200, { ok: true });
+    // Ein Aufruf für alle Repo-Funktionen: { fn, args } → core[fn](token, ...args)
+    if (url.pathname === '/api/call' && req.method === 'POST') {
+      const { fn, args = [] } = JSON.parse((await body(req)).toString('utf8'));
+      if (!CALLS.includes(fn)) return json(res, 400, { error: 'Unbekannte Funktion' });
+      return json(res, 200, (await core[fn](token(), ...args)) ?? { ok: true });
     }
     if (url.pathname === '/api/c4d' && req.method === 'POST') {
       const { glb, note } = await convertC4D(await body(req), url.searchParams.get('name') || 'szene.c4d');

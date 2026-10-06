@@ -18,55 +18,74 @@
 <link rel="stylesheet" href="lib/style.css">
 <style>
   body { background: linear-gradient(180deg, var(--cyc-top) 0, var(--cyc-top) 320px, var(--cyc-floor) 100%) fixed; min-height: 100%; }
-  main { max-width: 860px; margin: 0 auto; padding: clamp(28px, 6vw, 64px) 16px 80px; }
+  main { max-width: 900px; margin: 0 auto; padding: clamp(28px, 6vw, 64px) 16px 80px; }
   .top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 28px; }
   .top h1 { max-width: none; }
   .who { font: 400 11px/1.6 var(--mono); color: var(--ink-soft); text-align: right; }
   .who button { border: 0; background: none; padding: 0; color: var(--ink-soft); text-decoration: underline; cursor: pointer; font: inherit; }
-  .card { background: var(--glass); border: 1px solid var(--rule); border-radius: 14px; padding: 20px; margin-bottom: 18px; }
+  .card { background: var(--glass); border: 1px solid var(--rule); border-radius: 14px; padding: 18px 20px; margin-bottom: 14px; }
   .card h2 { margin: 0 0 6px; font-size: 18px; font-weight: 700; font-stretch: 110%; }
   .card p { margin: 0 0 12px; color: var(--ink-soft); }
   .card ol { margin: 0 0 14px; padding-left: 20px; color: var(--ink-soft); }
   .card ol b { color: var(--ink); font-weight: 600; }
+  .lab { display: block; font: 500 10px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; }
   .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
   .field { height: 42px; border: 1px solid var(--rule); border-radius: 10px; background: #fff; padding: 0 12px; min-width: 0; flex: 1; }
-  .btn2 { height: 42px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--rule); background: transparent; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; color: var(--ink); white-space: nowrap; }
+  select.field { flex: 1 1 260px; cursor: pointer; font-weight: 600; }
+  .btn2 { height: 42px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--rule); background: transparent; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; color: var(--ink); white-space: nowrap; }
   .btn2:hover { background: var(--rule); }
+  .btn2.sm { height: 32px; padding: 0 11px; font-size: 12.5px; border-radius: 8px; }
   .btn.small { height: 42px; border-radius: 10px; }
   .msg { font: 400 12px/1.4 var(--mono); margin-top: 10px; }
   .msg.bad { color: var(--bad); }
-  .opts { display: flex; gap: 10px 18px; flex-wrap: wrap; align-items: center; }
+  .opts { display: flex; gap: 10px 18px; flex-wrap: wrap; align-items: center; margin-top: 14px; }
   .opts .field { flex: 1 1 240px; }
   .opts .toggle { margin: 0; }
+  .newf { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; margin-top: 10px; }
+  .filebtn { position: relative; overflow: hidden; }
+  .filebtn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .flink { display: flex; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 12px; border-radius: 10px; background: color-mix(in srgb, var(--select) 9%, transparent); flex-wrap: wrap; }
+  .flink img { height: 28px; max-width: 90px; object-fit: contain; }
+  .flink code { font: 400 12px/1.4 var(--mono); flex: 1; min-width: 200px; overflow-wrap: anywhere; }
 
   .zone {
-    border: 1.5px dashed color-mix(in srgb, var(--ink) 30%, transparent); border-radius: 18px;
-    min-height: 230px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
-    padding: 28px 20px; margin: 18px 0; transition: background .15s, border-color .15s; cursor: pointer;
+    position: relative; border: 1.5px dashed color-mix(in srgb, var(--ink) 30%, transparent); border-radius: 18px;
+    min-height: 210px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    padding: 28px 20px; margin: 14px 0 6px; transition: background .15s, border-color .15s; cursor: pointer;
   }
   .zone:hover, body.dragging .zone { background: color-mix(in srgb, var(--select) 8%, transparent); border-color: var(--select); }
   .zone h2 { margin: 0 0 8px; font-weight: 750; font-stretch: 118%; font-size: clamp(24px, 4vw, 36px); line-height: 1; letter-spacing: -.02em; }
-  .zone p { margin: 0; color: var(--ink-soft); max-width: 46ch; }
+  .zone p { margin: 0; color: var(--ink-soft); max-width: 50ch; }
+  .zone p b { color: var(--ink); }
   .zone .fmts { margin-top: 14px; font: 400 11px/1.7 var(--mono); color: var(--ink-soft); letter-spacing: .04em; }
   .zone input { position: absolute; width: 1px; height: 1px; opacity: 0; }
   .zone.off { opacity: .45; pointer-events: none; }
 
-  h3.sec { font: 500 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); margin: 30px 0 10px; display: flex; justify-content: space-between; align-items: center; }
-  h3.sec button { font: inherit; letter-spacing: .06em; text-transform: none; }
+  h3.sec { font: 500 11px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-soft); margin: 30px 0 10px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+  h3.sec .btn2 { font: 500 12px/1 var(--display); letter-spacing: 0; text-transform: none; }
   .list { display: flex; flex-direction: column; gap: 8px; }
-  .item { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: center; background: var(--glass); border: 1px solid var(--rule); border-radius: 12px; padding: 12px 14px; }
+  .item { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 14px; align-items: center; background: var(--glass); border: 1px solid var(--rule); border-radius: 12px; padding: 10px 12px; }
+  .item .th { grid-row: span 2; width: 56px; height: 56px; border-radius: 8px; background: var(--cyc-floor) center / cover no-repeat; }
   .item .t { font-weight: 650; overflow-wrap: anywhere; }
   .item .s { font: 400 11px/1.5 var(--mono); color: var(--ink-soft); overflow-wrap: anywhere; }
   .item .s.ok { color: var(--ok); } .item .s.bad { color: var(--bad); }
-  .item .a { display: flex; gap: 6px; grid-row: span 2; }
-  .item .a .btn2 { height: 34px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
+  .item .a { display: flex; gap: 6px; grid-row: span 2; grid-column: 3; flex-wrap: wrap; justify-content: flex-end; }
+  .item .a select { height: 32px; border: 1px solid var(--rule); border-radius: 8px; background: transparent; padding: 0 6px; max-width: 150px; font-size: 12.5px; }
   .item .a .del:hover { color: var(--bad); border-color: var(--bad); background: none; }
   .bar2 { height: 2px; background: var(--rule); grid-column: 1 / -1; overflow: hidden; border-radius: 2px; }
   .bar2 i { display: block; height: 100%; width: 0; background: var(--select); transition: width .3s; }
-  .empty { color: var(--ink-soft); font-size: 14px; padding: 8px 2px; }
-  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: var(--cyc-top); padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: .2s; pointer-events: none; }
+  .group { margin-bottom: 22px; }
+  .ghead { display: flex; align-items: center; gap: 12px; margin: 0 0 8px; flex-wrap: wrap; }
+  .ghead .logo { height: 34px; width: 80px; object-fit: contain; object-position: left center; }
+  .ghead .name { font-weight: 750; font-stretch: 112%; font-size: 18px; }
+  .ghead .cnt { font: 400 11px/1 var(--mono); color: var(--ink-soft); flex: 1; }
+  .empty { color: var(--ink-soft); font-size: 14px; padding: 6px 2px; margin: 0; }
+  .toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; background: var(--ink); color: var(--cyc-top); padding: 10px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; transition: .2s; pointer-events: none; z-index: 9; }
   .toast.on { opacity: 1; transform: translate(-50%, 0); }
-  @media (max-width: 600px) { .item { grid-template-columns: 1fr; } .item .a { grid-row: auto; } .top { flex-direction: column; } .who { text-align: left; } }
+  @media (max-width: 640px) {
+    .item { grid-template-columns: auto 1fr; } .item .a { grid-column: 1 / -1; grid-row: auto; justify-content: flex-start; }
+    .top { flex-direction: column; } .who { text-align: left; } .newf { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -76,7 +95,7 @@
       <p class="brand"><b>Knapp Media</b> · 3D-Upload</p>
       <h1>Modelle hochladen</h1>
     </div>
-    <div class="who" id="who" hidden>Verbunden mit KNAPPMEDIA/3d<br><button id="logout">Schlüssel auf diesem Gerät entfernen</button></div>
+    <div class="who" id="who" hidden><span id="whoTxt">Verbunden mit KNAPPMEDIA/3d</span><br><button id="logout">Schlüssel auf diesem Gerät entfernen</button></div>
   </div>
 
   <section class="card" id="setup" hidden>
@@ -97,7 +116,24 @@
     <div class="msg" id="tokenMsg"></div>
   </section>
 
-  <section class="card">
+  <section class="card" id="target">
+    <label class="lab" for="folderSel">Hochladen in</label>
+    <div class="row">
+      <select class="field" id="folderSel"><option value="">Kein Ordner (einzelne Links)</option></select>
+      <button class="btn2" id="newFolderBtn">+ Neuer Ordner</button>
+    </div>
+    <div class="newf" id="newFolder" hidden>
+      <input class="field" id="nfName" placeholder="Name, z. B. FIGHTERO" aria-label="Ordnername">
+      <span class="btn2 filebtn" id="nfLogoBtn">Logo wählen<input type="file" id="nfLogo" accept="image/png,image/jpeg,image/svg+xml,image/webp"></span>
+      <button class="btn small" id="nfCreate">Ordner anlegen</button>
+    </div>
+    <div class="flink" id="flink" hidden>
+      <img id="flinkLogo" alt="" hidden>
+      <code id="flinkUrl"></code>
+      <button class="btn2 sm" id="flinkCopy">Ordner-Link kopieren</button>
+      <a class="btn2 sm" id="flinkOpen" target="_blank" rel="noopener">Öffnen</a>
+      <span class="btn2 sm filebtn">Logo ändern<input type="file" id="flinkLogoIn" accept="image/png,image/jpeg,image/svg+xml,image/webp"></span>
+    </div>
     <div class="opts">
       <input class="field" id="client" placeholder="Kunde (optional, steht unter dem Titel)" aria-label="Kunde">
       <label class="toggle"><input type="checkbox" id="optDark"><span></span>Dunkler Hintergrund</label>
@@ -107,16 +143,16 @@
 
   <label class="zone off" id="zone">
     <h2>Dateien hier reinziehen</h2>
-    <p>Jedes Modell bekommt seinen eigenen Link. Ganze Ordner mit Texturen gehen auch.</p>
-    <div class="fmts">GLB · GLTF · FBX · OBJ+MTL · STL · PLY · DAE · 3DS · 3MF · USDZ<br>C4D: vorher auf „C4D-zu-GLB.bat“ ziehen</div>
+    <p id="zoneTxt">Jedes Modell bekommt seinen eigenen Link. Ganze Ordner mit Texturen gehen auch.</p>
+    <div class="fmts" id="fmts">GLB · GLTF · FBX · OBJ+MTL · STL · PLY · DAE · 3DS · 3MF · USDZ<br>C4D: vorher auf „C4D-zu-GLB.bat“ ziehen</div>
     <input type="file" id="pick" multiple>
   </label>
 
-  <h3 class="sec" id="jobsHead" hidden>Gerade hochgeladen <button class="btn2" id="copyAll" style="height:30px">Alle Links kopieren</button></h3>
+  <h3 class="sec" id="jobsHead" hidden>Gerade hochgeladen <button class="btn2 sm" id="copyAll">Alle Links kopieren</button></h3>
   <div class="list" id="jobs"></div>
 
-  <h3 class="sec">Alle Modelle <button class="btn2" id="reload" style="height:30px">Aktualisieren</button></h3>
-  <div class="list" id="all"><p class="empty">Wird geladen …</p></div>
+  <h3 class="sec">Alle Modelle <button class="btn2 sm" id="reload">Aktualisieren</button></h3>
+  <div id="all"><p class="empty">Wird geladen …</p></div>
 </main>
 <div class="toast" id="toast" role="status"></div>
 <script type="module" src="lib/upload.js"></script>
