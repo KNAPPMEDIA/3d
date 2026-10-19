@@ -7,9 +7,10 @@
   "autoRotate": true,
   "download": false,
   "source": "FIGHTERO_WalkIn_V04.glb",
-  "date": "16.10.2026",
-  "created": "2026-10-16T17:40:00.000Z",
+  "date": "19.10.2026",
+  "created": "2026-10-19T05:56:32.761Z",
   "thumb": "thumb.webp",
   "ar": "ar.glb",
-  "light": "epic"
+  "light": "epic",
+  "version": 2
 }
