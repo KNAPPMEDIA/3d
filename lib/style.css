@@ -284,3 +284,8 @@ body.dragging .drop .box { outline: 1.5px dashed var(--select); outline-offset: 
   .stage[data-view="split"] .v2canvas { padding: 0 16px 16px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ?embed=1: schlanke Ansicht für iframes, nur Modell und Bedienleiste */
+[data-embed] .frame, [data-embed] .head, [data-embed] .hud,
+[data-embed] #bInsp, [data-embed] #bRec, [data-embed] #bDl, [data-embed] .insp { display: none !important; }
+[data-embed] .hint { font-size: 10px; max-width: calc(100% - 32px); }
