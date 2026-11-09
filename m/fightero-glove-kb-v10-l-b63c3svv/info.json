@@ -1,13 +1,13 @@
 {
   "status": "unsure",
-  "title": "FIGHTERO Glove KB V09 L + R (KitBuilder)",
+  "title": "FIGHTERO Glove KB V10 L",
   "client": "FIGHTERO",
   "folder": "fightero-fk8bnkyu",
   "background": "light",
   "download": false,
-  "source": "FIGHTERO_Glove_KB_V09.blend",
+  "source": "FIGHTERO_Glove_KB_V10_L.glb",
   "date": "09.11.2026",
-  "created": "2026-11-09T01:33:47.000Z",
+  "created": "2026-11-09T08:54:23.000Z",
   "thumb": "thumb.webp",
   "light": "epic"
 }
